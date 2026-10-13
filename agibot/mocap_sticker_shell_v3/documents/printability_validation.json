@@ -1,91 +1,308 @@
 {
-  "status": "GEOMETRY_CHECKED_PRINTABLE_PROTOTYPE",
-  "date": "2026-09-09",
+  "revision_date": "2026-10-11",
+  "model_version": "v3",
   "units": "mm",
-  "source_coordinate_frame": "shell_CAD_Y_up",
-  "physical_fit_tested": false,
-  "crash_tested": false,
-  "hardware_thread_confirmed": false,
-  "all_ten_obsolete_external_mounts_and_bores_removed": true,
-  "marker_transforms_unchanged": true,
-  "assembled_half_intersection_volume_mm3": 0.0,
-  "parts": [
+  "front_station_ids": [
+    "S11",
+    "S12",
+    "S13",
+    "S19",
+    "S20",
+    "S21",
+    "S22"
+  ],
+  "rear_upper_row": [
+    "S04",
+    "S05",
+    "S06",
+    "S07",
+    "S08"
+  ],
+  "rear_middle_row": [
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S18"
+  ],
+  "restored_station_ids": [
+    "S06",
+    "S07",
+    "S08",
+    "S15",
+    "S17"
+  ],
+  "retained_station_ids": [
+    "S04",
+    "S05",
+    "S06",
+    "S07",
+    "S08",
+    "S11",
+    "S12",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S18",
+    "S19",
+    "S20",
+    "S21",
+    "S22"
+  ],
+  "removed_station_ids": [
+    "S01",
+    "S02",
+    "S03",
+    "S09",
+    "S10",
+    "S23",
+    "S24"
+  ],
+  "front_stl_sha256_before": "e8cd73bd04adb59edfde3f05ccf3fce47396bda512b51b44cf4963239eede935",
+  "front_stl_sha256_after": "e8cd73bd04adb59edfde3f05ccf3fce47396bda512b51b44cf4963239eede935",
+  "rear_stl_sha256_before": "d2e7939b64d7a0a7e378e377b4cc7fb70f47a8d3821f773efb15688db7430dff",
+  "rear_stl_sha256_after": "5bf8bf09862e22431e35d023a467c17fb298eaa71dec8f7f31ac97fe169cb9f4",
+  "restoration_inputs": [
     {
-      "file": "printable/a3_marker_shell_v3_half_a.stl",
-      "sha256": "9b03a06955fb22116666be46f6322f3a7c93b24fab1a04c9dc1307e5870228d3",
-      "triangles": 83340,
-      "vertices": 41618,
-      "watertight": true,
-      "connected_components": 1,
-      "consistent_winding": true,
-      "all_edges_used_twice": true,
-      "transverse_crossings": 0,
-      "coplanar_overlaps": 0,
-      "native_intersection_pairs": 0,
-      "volume_mm3": 132420.37452454524,
-      "bounds_mm": [
-        [
-          -87.7899398803711,
-          -84.87408447265625,
-          -9.796319961547852
-        ],
-        [
-          87.79000854492188,
-          109.20001220703125,
-          79.90754699707031
-        ]
-      ],
-      "reference_surface_sample_count": 27474,
-      "baseline_absolute_sampled_CAD_error_mm": 0.10850299985821749,
-      "final_absolute_sampled_CAD_error_mm": 0.10850299985821749,
-      "largest_increase_in_sampled_CAD_distance_mm": 0.014469564080442752
+      "station": "S06",
+      "archived_station_sha256": "b82fcfc4b2ef6894d6a0bac8e716e6c8c00dcb74a274ee31442abd9940d66e20"
     },
     {
-      "file": "printable/a3_marker_shell_v3_half_b.stl",
-      "sha256": "99c9792bea31973eb2bea6c0d640183fe993d20739308817c6cfe16eb1859c18",
-      "triangles": 102652,
-      "vertices": 51246,
-      "watertight": true,
-      "connected_components": 1,
-      "consistent_winding": true,
-      "all_edges_used_twice": true,
-      "transverse_crossings": 0,
-      "coplanar_overlaps": 0,
-      "native_intersection_pairs": 0,
-      "volume_mm3": 144839.22762986782,
-      "bounds_mm": [
-        [
-          -87.99522399902344,
-          -84.8742446899414,
-          -87.3783187866211
-        ],
-        [
-          87.79019927978516,
-          109.20001220703125,
-          3.5000007152557373
-        ]
-      ],
-      "reference_surface_sample_count": 29896,
-      "baseline_absolute_sampled_CAD_error_mm": 0.16736715443371866,
-      "final_absolute_sampled_CAD_error_mm": 0.16736715443371866,
-      "largest_increase_in_sampled_CAD_distance_mm": 0.01648268581060378
+      "station": "S07",
+      "archived_station_sha256": "aa3c720b2d06995b5028992cb3f4414818571f3c0eaf779a052258f484465911"
+    },
+    {
+      "station": "S08",
+      "archived_station_sha256": "8ee657a566ce18fc33624f6497224302c7c9d5768d1debbe616dbf76f5fd50b0"
+    },
+    {
+      "station": "S15",
+      "archived_station_sha256": "555f97472e9678c79e16c8b62edfe483079356f95bed5c8213a015d421cd3be9"
+    },
+    {
+      "station": "S17",
+      "archived_station_sha256": "9d08e25d89c4a7684506a7775137ea4f22a302d1e5c02b6eb96d685255d23179"
     }
   ],
-  "old_bore_probe_count": 250,
-  "new_station_count": 24,
-  "scope": "Closed mesh geometry and sampled source-surface retention checked. Not a physical fit, printer-process, strength, impact or live tracking certification.",
-  "flush_pin": {
-    "file": "printable/a3_marker_shell_v3_flush_pin.stl",
-    "sha256": "f57259bcf324e2b41aae8441b94ff6d50de911d98a023801ff1b90d9d5b35792",
-    "nominal_diameter_mm": 3.45,
-    "length_mm": 1.3,
-    "fit": "Provisional interference fit; verify on a coupon before installing."
+  "rear_mesh": {
+    "boundary_edges": 0,
+    "connected_components_number": 1,
+    "edges_number": 148698,
+    "faces_number": 99132,
+    "genus": 39,
+    "incident_faces_on_non_two_manifold_edges": 0,
+    "incident_faces_on_non_two_manifold_vertices": 0,
+    "is_mesh_two_manifold": true,
+    "non_two_manifold_edges": 0,
+    "non_two_manifold_vertices": 0,
+    "number_holes": 0,
+    "unreferenced_vertices": 0,
+    "vertices_number": 49490,
+    "watertight": true,
+    "winding_consistent": true,
+    "positive_volume": true,
+    "volume_mm3": 142825.2133523585,
+    "bounds_mm": [
+      [
+        -87.99522399902344,
+        -84.8742446899414,
+        -87.3783187866211
+      ],
+      [
+        87.79019927978516,
+        109.20001220703125,
+        3.5000007152557373
+      ]
+    ],
+    "triangles": 99132,
+    "vertices": 49490,
+    "euler_number": -76,
+    "self_intersecting_faces": 0,
+    "degenerate_triangles": 0,
+    "duplicate_triangles": 0
   },
-  "local_wall_sampling": {
-    "front_f1_minimum_vertical_gap_mm": 1.503,
-    "front_f2_f5_minimum_sampled_clearance_mm": 2.494,
-    "rear_minimum_sampled_clearance_mm": 2.41,
-    "old_axis_probe_minimum_material_path_mm": 2.29267879076572,
-    "limits": "Different sampling methods, not a certified global minimum thickness. The approximately 1.5 mm local f1 edge is thinner than the nominal 2.5 mm skin."
+  "physical_validation": "NOT_PERFORMED: printed fit, slicing/material, retention, impact survival and visibility require testing.",
+  "front_mesh": {
+    "boundary_edges": 0,
+    "connected_components_number": 1,
+    "edges_number": 111804,
+    "faces_number": 74536,
+    "genus": 22,
+    "incident_faces_on_non_two_manifold_edges": 0,
+    "incident_faces_on_non_two_manifold_vertices": 0,
+    "is_mesh_two_manifold": true,
+    "non_two_manifold_edges": 0,
+    "non_two_manifold_vertices": 0,
+    "number_holes": 0,
+    "unreferenced_vertices": 0,
+    "vertices_number": 37226,
+    "watertight": true,
+    "winding_consistent": true,
+    "positive_volume": true,
+    "volume_mm3": 127342.97982415266,
+    "bounds_mm": [
+      [
+        -87.7899398803711,
+        -84.87408447265625,
+        -9.796319961547852
+      ],
+      [
+        87.79000854492188,
+        109.20001220703125,
+        79.90754699707031
+      ]
+    ],
+    "triangles": 74536,
+    "vertices": 37226,
+    "euler_number": -42,
+    "self_intersecting_faces": 0,
+    "degenerate_triangles": 0,
+    "duplicate_triangles": 0
+  },
+  "rear_station_checks": [
+    {
+      "station": "S04",
+      "bore_depth_mm": 4.600003256882012,
+      "top_plane_max_error_mm": 3.294439077011768e-06,
+      "top_diameter_mm": 12.000006957038629,
+      "bore_diameter_mm": 3.399993012138022
+    },
+    {
+      "station": "S05",
+      "bore_depth_mm": 4.599999243800761,
+      "top_plane_max_error_mm": 3.086809820390668e-06,
+      "top_diameter_mm": 12.000007386915561,
+      "bore_diameter_mm": 3.399992645628356
+    },
+    {
+      "station": "S06",
+      "bore_depth_mm": 4.600001124474572,
+      "top_plane_max_error_mm": 3.3356690447849946e-06,
+      "top_diameter_mm": 12.000007354462056,
+      "bore_diameter_mm": 3.3999932925012337
+    },
+    {
+      "station": "S07",
+      "bore_depth_mm": 4.600000246491937,
+      "top_plane_max_error_mm": 2.2274641610919854e-06,
+      "top_diameter_mm": 12.00000781478662,
+      "bore_diameter_mm": 3.399992423916756
+    },
+    {
+      "station": "S08",
+      "bore_depth_mm": 4.599999653209594,
+      "top_plane_max_error_mm": 3.7117762551885924e-06,
+      "top_diameter_mm": 12.000007473794717,
+      "bore_diameter_mm": 3.3999925700237585
+    },
+    {
+      "station": "S14",
+      "bore_depth_mm": 4.600000212549507,
+      "top_plane_max_error_mm": 2.4896918250916222e-06,
+      "top_diameter_mm": 12.000006927284888,
+      "bore_diameter_mm": 3.3999921362506713
+    },
+    {
+      "station": "S15",
+      "bore_depth_mm": 4.599998421628604,
+      "top_plane_max_error_mm": 3.1275483708126384e-06,
+      "top_diameter_mm": 12.000005886970632,
+      "bore_diameter_mm": 3.399993971656243
+    },
+    {
+      "station": "S16",
+      "bore_depth_mm": 4.5999992776021825,
+      "top_plane_max_error_mm": 3.411647089723857e-06,
+      "top_diameter_mm": 12.000003265588587,
+      "bore_diameter_mm": 3.3999965009685393
+    },
+    {
+      "station": "S17",
+      "bore_depth_mm": 4.599999441824917,
+      "top_plane_max_error_mm": 2.627887526251982e-06,
+      "top_diameter_mm": 12.000006735775735,
+      "bore_diameter_mm": 3.399992296735245
+    },
+    {
+      "station": "S18",
+      "bore_depth_mm": 4.600000721073647,
+      "top_plane_max_error_mm": 2.781040683352831e-06,
+      "top_diameter_mm": 12.000006151393478,
+      "bore_diameter_mm": 3.3999935132356214
+    }
+  ],
+  "assembled_intersection_volume_mm3": 0.0,
+  "unchanged_rear_surface_samples": {
+    "count": 84425,
+    "max_distance_mm": 2.9521561709535964e-06,
+    "points_above_0p001mm": 0
+  },
+  "status": "GEOMETRY_CHECKED_PRINTABLE_PROTOTYPE",
+  "methods": [
+    "Trimesh watertight/winding/volume/degenerate/duplicate checks",
+    "MeshLab topology and self-intersection filter on serialized STLs",
+    "Manifold3D union and assembled intersection",
+    "49 station rays per rear station; original rear surface proximity outside five restored footprints",
+    "240 interior samples per rear side-load nut slot; no solid obstruction at sampled points"
+  ],
+  "freecad_check_current_rear": "NOT_RERUN; earlier FreeCAD result applies only to prior rear SHA-256",
+  "rear_nut_slot_access_samples": [
+    {
+      "station": "S04",
+      "slot_sample_count": 240,
+      "unexpected_solid_samples": 0
+    },
+    {
+      "station": "S05",
+      "slot_sample_count": 240,
+      "unexpected_solid_samples": 0
+    },
+    {
+      "station": "S06",
+      "slot_sample_count": 240,
+      "unexpected_solid_samples": 0
+    },
+    {
+      "station": "S07",
+      "slot_sample_count": 240,
+      "unexpected_solid_samples": 0
+    },
+    {
+      "station": "S08",
+      "slot_sample_count": 240,
+      "unexpected_solid_samples": 0
+    },
+    {
+      "station": "S14",
+      "slot_sample_count": 240,
+      "unexpected_solid_samples": 0
+    },
+    {
+      "station": "S15",
+      "slot_sample_count": 240,
+      "unexpected_solid_samples": 0
+    },
+    {
+      "station": "S16",
+      "slot_sample_count": 240,
+      "unexpected_solid_samples": 0
+    },
+    {
+      "station": "S17",
+      "slot_sample_count": 240,
+      "unexpected_solid_samples": 0
+    },
+    {
+      "station": "S18",
+      "slot_sample_count": 240,
+      "unexpected_solid_samples": 0
+    }
+  ],
+  "flush_pin": {
+    "filename": "a3_marker_shell_v3_flush_pin.stl",
+    "unchanged": true,
+    "maximum_quantity": 17
   }
 }

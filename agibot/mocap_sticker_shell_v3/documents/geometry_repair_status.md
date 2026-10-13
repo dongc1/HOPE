@@ -1,34 +1,60 @@
 # Printable geometry verification
 
-**Status: both fused STL halves pass geometry checks.** All ten obsolete
-external bosses and bores are removed. Physical fit, printer-process validation,
-hardware retention and crash testing have not been performed.
+**2026-10-11: rear-only restoration; 17 stations, seven front and ten rear.**
+Half A is byte-for-byte unchanged. Half B restores S06/S07/S08/S15/S17 to complete
+upper row S04-S08 and middle row S14-S18. All ten obsolete external bosses and
+bores remain removed. S01/S02/S03/S09/S10/S23/S24 remain absent. Physical fit,
+printer-process validation, hardware retention and crash testing have not run.
 
 ## Final exported meshes
 
 | Check | Half A | Half B |
 |---|---:|---:|
-| Triangles | 83,340 | 102,652 |
+| Triangles | 74,536 | 99,132 |
 | Connected components | 1 | 1 |
 | Closed / consistently wound | Pass | Pass |
 | Every edge used exactly twice | Pass | Pass |
 | Duplicate / degenerate triangles | 0 / 0 | 0 / 0 |
-| Independent transverse crossings | 0 | 0 |
-| Independent coplanar overlaps | 0 | 0 |
-| FreeCAD self-intersection pairs | 0 | 0 |
-| FreeCAD solid / nonmanifold | Solid / false | Solid / false |
+| MeshLab self-intersecting faces | 0 | 0 |
+| Positive volume (mm³) | 127,342.980 | 142,825.213 |
 
-The finite-triangle checker recomputes normals from double-precision vertex
-coordinates. It includes shared-vertex crossings and shared-edge coplanar
-foldbacks; transverse tolerance is 1e-7 mm and coplanar area threshold 1e-8 mm².
+Current checks use Trimesh (topology/winding/volume), MeshLab (manifold topology
+and self-intersections), and Manifold3D (union and assembled intersection).
 These are finite-precision checks, not an exact-predicate mathematical proof.
-The independent CAD application's checks also pass on the serialized STLs.
-The two halves have zero assembled intersection volume in the mesh boolean test.
+The two halves have zero assembled intersection volume. FreeCAD and the prior
+custom finite-triangle checker were not rerun on the new rear STL; their old
+rear results do not certify the changed mesh. The unchanged front retains its
+earlier evidence as well as the fresh checks above.
 
 See [printability_validation.json](printability_validation.json) for SHA-256
 identities, bounds, volumes and machine-readable results.
 
-## How the obsolete features were removed
+## Rear-only restoration
+
+Front: S11, S12, S13, S19, S20, S21, S22 (unchanged).
+Rear: S04-S08 and S14-S18 (two asymmetric rows, five stations each).
+The five restored stations use the archived flat-top station meshes and original
+positions/axes. The existing five rear stations and all front table rows remain
+unchanged. No obsolete mounting boss or removed lower rear station was restored.
+
+The serialized rear mesh was unioned with only those five archived station
+solids. All ten rear stations pass 48 annular plane probes plus a bore-axis
+probe each: flat 12 mm top, 3.4 mm central bore and 4.6 mm blind axial depth,
+within 0.001 mm. Structural fasteners remain in the unchanged shell base.
+An additional 240 interior samples per rear side-load nut slot (2,400 total)
+found no solid obstruction at the sampled points. This checks the restored
+stations' access geometry; actual nut insertion and retention still need a fit test.
+
+Outside the five restored footprints, **84,425 points** from the prior rear
+vertices and sampled surface have maximum distance **0.0000029522 mm** to the
+new surface; zero exceed 0.001 mm. This is a sampled retention check, not an
+absolute CAD tolerance or global minimum-wall proof. The front SHA-256 remains
+`e8cd73bd04adb59edfde3f05ccf3fce47396bda512b51b44cf4963239eede935`.
+The rear is now
+`5bf8bf09862e22431e35d023a467c17fb298eaa71dec8f7f31ac97fe169cb9f4`.
+The earlier base-repair evidence and limitations below remain historical.
+
+## Historical base repair: how the obsolete features were removed
 
 The old f1 boss was replaced using its original boundary and tangent-constrained
 outer-skin continuation, with a bounded inner patch. The remaining front and
@@ -41,13 +67,13 @@ The flat 12 mm dual-mode stations were then fused into each repaired half.
 Their 3.4 mm central bores and captive-nut pockets remain. Structural shell
 fasteners, seams and openings were excluded from the obsolete-feature deletion.
 
-All **250 ray probes** through the ten old bore locations hit closed skin.
+In the earlier base repair, all **250 ray probes** through the ten old bore locations hit closed skin.
 The former top planes are retracted by at least 2.38 mm in those probe regions.
-All **24 new stations** independently pass checks on the final meshes for their
+The previous **24-station release** independently passed checks on its meshes for their
 flat top planes, 12 mm outside diameter, 3.4 mm bore and 4.6 mm axial bore depth.
 Their marker positions and axes are unchanged.
 
-## Surface retention and thickness
+## Historical base-repair surface retention and thickness
 
 Mesh cleanup used bounded simplification and a tiny local correction, not
 global voxel reconstruction or broad automated hole filling. The rear cleanup
@@ -65,7 +91,7 @@ footprints:
 | Sampled comparison | Front | Rear |
 |---|---:|---:|
 | Archived mesh's absolute distance from original CAD, maximum | 0.108503 mm | 0.167367 mm |
-| Final mesh's absolute distance from original CAD, maximum | 0.108503 mm | 0.167367 mm |
+| Previous 24-station mesh's absolute distance from original CAD, maximum | 0.108503 mm | 0.167367 mm |
 | Largest increase in distance at a compared point | 0.014470 mm | 0.016483 mm |
 | Points whose distance increased by more than 0.05 mm | 0 | 0 |
 

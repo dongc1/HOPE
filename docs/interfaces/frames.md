@@ -48,15 +48,19 @@ and `P2` — in the world frame during competition (a `Table` asset exists for
 calibration only and is not streamed). P1/P2 are marker-cluster frames; the
 calibrated constant transform mapping each one to its robot's URDF root
 (`pelvis_link` on the Agibot A3) is required. P1's production transform is the
-approved runtime JSON at `calibration/p1_to_pelvis.json`; the static
+approved runtime JSON at `calibration/ucb_robot_to_pelvis.json`; the static
 `mocap_to_base_link` block of `hope_world_frame.yaml` remains for P2 and legacy
 records. Discipline:
 
 - The values are **never** hand-typed identities. P1's approved marker/CAD
   receipt is written atomically and the relay derives its wire ID from the
-  exact file SHA-256. Runtime requires the v3 S01–S24 sticker layout ID and
-  canonical optical-centre table hash; old ten-marker receipts are rejected.
+  exact file SHA-256. The `stickers_v3` profile requires the 17-station layout ID,
+  canonical optical-centre table hash and asset-frame revision. All earlier
+  12-point (including pelvis-aligned), old 24-station and ten-marker sticker receipts are rejected.
   The checked-in P1 YAML is uncalibrated pending a new live receipt.
+  The supplied pelvis-aligned native asset targets an identity **local**
+  P1-to-pelvis correction with Motive Streaming Up Axis Z. That expected
+  identity must be verified, not hand-approved; live world-to-P1 still moves.
   Historical evidence remains under
   [`hope_ws/calibration_receipts/`](../../hope_ws/calibration_receipts).
 - The production route is `p1_marker_cad_calibrator`, which registers live

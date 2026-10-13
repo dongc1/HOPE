@@ -1,11 +1,11 @@
 {
   "status": "LOCAL_NUMERIC_AUTHORING_CHECKS_PASS_NATIVE_EXPORT_AND_LIVE_VALIDATION_PENDING",
-  "date": "2026-09-09",
-  "source_sha256": "3b304f521b85ebac8c8595d1666322ef3c64f9dcd40ffa0d339da25b431bdb90",
-  "definition_sha256": "55d61b40539e60d60040927b6e7c72f2e6099e6b5faa2c8575fecaf94e1ca65e",
-  "marker_data_header_sha256": "5df62f5c6d1ad6bef0870eb00ee3dffc15fdf78d34f5f14873bbc3d439864b54",
-  "marker_count": 24,
-  "station_names_unique_and_sequential": true,
+  "date": "2026-10-11",
+  "source_sha256": "5c0e9ed20497453026d07e877711ef2a184c7b27098525a2b6c3fc6468b150a0",
+  "definition_sha256": "dc0c8b804a8a32f956fb1a69936b93cebf3e32c53d0d2af127194e608528db16",
+  "marker_data_header_sha256": "8e05bdd43eef577016fae19f1723225fa8ef62d52704636ed449738e80ac0e34",
+  "marker_count": 17,
+  "station_names_unique_in_retained_cad_order": true,
   "expected_member_ids": [
     1,
     2,
@@ -23,31 +23,33 @@
     14,
     15,
     16,
-    17,
-    18,
-    19,
-    20,
-    21,
-    22,
-    23,
-    24
+    17
   ],
   "coordinate_rank": 3,
   "R_ros_from_native_determinant": 1,
   "basis_roundtrip_max_error_m": 0.0,
   "pairwise_distance_max_change_m": 2.7755575615628914e-17,
-  "minimum_marker_centre_separation_m": 0.02694165933725527,
+  "minimum_marker_centre_separation_m": 0.03648064738402231,
   "centroid_pelvis_link_m_not_subtracted": [
-    -0.003043211833333333,
-    0.0004662524999999998,
-    -0.09051243625
+    -0.007841290176470587,
+    0.0004541809411764718,
+    -0.0922557295882353
   ],
   "float32_max_point_error_m": 7.359086879762002e-09,
   "synthetic_nonidentity_pose_max_component_error_m": 5.551115123125783e-17,
   "native_motive_sdk_compile": "NOT_RUN_WINDOWS_SDK_UNAVAILABLE",
   "native_motive_export_and_reimport": "NOT_RUN",
-  "motive_3_5_live_axes_marker_order_and_24_marker_capacity": "NOT_VERIFIED",
   "ball_centre_definition": "NOT_SUPPLIED_INSTALLED_OFFSET_UNKNOWN",
   "physical_fit_and_optical_calibration": "NOT_PERFORMED",
-  "printer_models_and_marker_tables_modified": false
+  "printer_models_and_marker_tables_modified": true,
+  "authoring_order_note": "Nominal CAD station order, not the member order of the measured A3 asset; use optitrack_station_mapping.csv for that candidate.",
+  "measured_asset_correspondence_report": "optitrack_asset_correspondence.json",
+  "measured_asset_frame_alignment": {
+    "asset_file": "../motive_asset/A3_v3_17_stickers.motive",
+    "sha256": "fecabc7c812f83dd5a015e0de145026ba8a21173f58140b92b8510486eaf560d",
+    "offline_identity_check": "PASS",
+    "motive_import_and_stream_check": "NOT_PERFORMED",
+    "report": "optitrack_asset_correspondence.json"
+  },
+  "motive_3_5_live_axes_marker_order_and_17_marker_capacity": "NOT_VERIFIED"
 }
