@@ -141,7 +141,7 @@ The last two commands must list the same physical GPU as host `nvidia-smi -L`.
 Do not create `grasping` until this works; otherwise Distrobox can be created
 successfully while Isaac remains unable to use CUDA.
 
-### 1.4 Clone HOPE and materialize Git LFS content
+### 1.4 Clone HOPE
 
 Distrobox shares the host home directory, so clone under `$HOME`. The rest of
 the documentation uses `$HOME/workspace/HOPE` as the example location; another
@@ -154,12 +154,13 @@ cd "$HOME/workspace/HOPE"
 
 git lfs install
 git lfs pull
-test "$(stat -c %s hope_training/whole_body_tracking/checkpoints/model_21800.pt)" -gt 1000000
+test -s hope_training/whole_body_tracking/checkpoints/policy.onnx
 ```
 
-Without Git LFS, `model_21800.pt` is a small text pointer. Training from scratch
-does not require that checkpoint, but a complete clone and published-model
-playback do.
+The current model_14600 baseline uses ordinary Git files for its ONNX/deploy
+export and contains no resumable `.pt` checkpoint. Train from scratch, then use
+a checkpoint from that run for Isaac playback. Git LFS remains available for
+other revisions or optional assets.
 
 ## 2. Create the verified `grasping` training environment
 
@@ -314,11 +315,11 @@ sudo apt update
 
 sudo apt install -y \
   ros-jazzy-desktop ros-dev-tools \
-  build-essential cmake coreutils git git-lfs pkg-config procps tar \
+  build-essential cmake coreutils git git-lfs patch pkg-config procps tar \
   util-linux wget \
-  python3-colcon-common-extensions python3-numpy python3-pip \
-  python3-rosdep python3-vcstool python3-yaml \
-  cppzmq-dev libacl1-dev libboost-all-dev libeigen3-dev libglm-dev \
+  python3-catkin-pkg python3-colcon-common-extensions python3-empy python3-lark python3-numpy python3-pip python3-protobuf python3-pytest \
+  python3-rosdep python3-scipy python3-vcstool python3-venv python3-yaml \
+  cppzmq-dev libacl1-dev libboost-all-dev libeigen3-dev libfmt-dev libglm-dev \
   libgl1-mesa-dev libglfw3-dev libgtest-dev libssl-dev libmsgpack-cxx-dev \
   libx11-dev libxcursor-dev libxi-dev libxinerama-dev \
   libxrandr-dev libxxf86vm-dev libyaml-cpp-dev libzmq3-dev rapidjson-dev \
@@ -375,9 +376,26 @@ and Gate 3 workflow.
 - `ModuleNotFoundError: omni.timeline` from `python -c 'import
   whole_body_tracking'`: this import occurred before Kit startup. Use the
   `find_spec` probe above or a shipped Isaac entrypoint.
-- `model_21800.pt` is about 130 bytes: install Git LFS on the host and run
-  `git lfs pull` from the repository root.
+- A checkpoint from another revision is about 130 bytes: it is a Git LFS
+  pointer; install Git LFS and run `git lfs pull` for that revision. The current
+  model_14600 ONNX baseline cannot be loaded as an Isaac `.pt` checkpoint.
 - `/opt/ros/jazzy/setup.bash` is missing: the `hope` container is incomplete or
   was created from Ubuntu 22.04. Recreate it from the documented 24.04 image.
 - The Isaac image fills the disk during creation: check `podman system df`; do
   not delete active containers or training data as an installation shortcut.
+
+## Runtime build and offline analysis updates (2026-10-13)
+
+Use the system Python for ROS message generation, even if a Conda or uv environment
+is present. In the `hope` container, source `/opt/ros/jazzy/setup.bash`, then pass
+`-DPython3_EXECUTABLE=/usr/bin/python3 -DPYTHON_EXECUTABLE=/usr/bin/python3` to
+`colcon build --cmake-args`. Missing `em` or `lark` means the message generator
+is using the wrong interpreter or the ROS apt dependencies above are missing.
+
+Keep independent MuJoCo/offline analysis in a separate Python 3.12 virtual
+environment. Do not install its packages into the ROS or Isaac environment.
+See [build and tests](operations/build_and_test.md),
+[deployment and Gate 3](operations/deploy_and_gate3.md), and
+[ball-physics calibration](operations/ball_physics_calibration.md) for runtime
+commands and retained evidence. Training installation instructions above remain
+the public main workflow.
