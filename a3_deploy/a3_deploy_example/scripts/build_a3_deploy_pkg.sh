@@ -533,6 +533,11 @@ configure_and_build() {
     -DGS_PACKAGE_ARCH_NAME="${ARCH}"
     -DGS_RUNTIME_OUTPUT_DIR="${PKG_DIR}"
   )
+  # Allow emulated build hosts to opt out of oneTBB LTO when their compiler's
+  # jobserver integration fails. Preserve the upstream default elsewhere.
+  if [[ -n "${A3_TBB_ENABLE_IPO:-}" ]]; then
+    cmake_args+=(-DTBB_ENABLE_IPO="${A3_TBB_ENABLE_IPO}")
+  fi
   # CMake FetchContent re-downloads URL-only dependencies when it regenerates the
   # populate stamp, even when the exact extracted source is already present.  Gate3
   # builds are frequently repeated only to stage another policy, so bind the verified
@@ -857,6 +862,7 @@ serve_bridge = gear_root / "scripts" / "a3p_gripper_bridge.py"
 if not serve_bridge.is_file():
     raise SystemExit(f"required serve025 bridge is missing: {serve_bridge}")
 copy_into(serve_bridge, "tools")
+copy_into(gear_root / "scripts" / "gripper_profiles.json", "tools")
 
 onnx_cfg = nested(cfg, ["onnx"]) or {}
 onnx_mode = str(onnx_cfg.get("mode") or "monolithic")
@@ -1189,6 +1195,19 @@ stage_body_drive_debug_files() {
     "${PKG_DIR}/tools/"
 }
 
+is_legacy_rally_v10_package() {
+  [[ "${ARCH}" == "rockchip" ]] || return 1
+  python3 - "${PKG_DIR}/config/a3_runtime_config.yaml" <<'PY_CONFIG'
+import sys
+from pathlib import Path
+import yaml
+
+cfg = yaml.safe_load(Path(sys.argv[1]).read_text()) or {}
+model = (cfg.get("onnx") or {}).get("model_path", "")
+sys.exit(0 if not cfg.get("policy_dir") and Path(model).name == "model_10500_v10.onnx" else 1)
+PY_CONFIG
+}
+
 stage_run_scripts() {
   local default_transport="iceoryx"
   if [[ "${ARCH}" == "thor" ]]; then
@@ -1371,6 +1390,35 @@ elif [[ -f /opt/ros/humble/setup.bash ]]; then
   set -u
 fi
 
+# Bind both command publishers to the same catalog and selection.
+GRIPPER_PROFILE=legacy
+GRIPPER_PROFILE_SEEN=0
+GRIPPER_PROFILE_EXPECT=0
+for _arg in "$@"; do
+  if [[ "$GRIPPER_PROFILE_EXPECT" == 1 ]]; then
+    case "$_arg" in legacy|new_20261015) GRIPPER_PROFILE="$_arg" ;; *) echo "invalid gripper profile" >&2; exit 64 ;; esac
+    GRIPPER_PROFILE_EXPECT=0
+    continue
+  fi
+  case "$_arg" in
+    --gripper-profile)
+      [[ "$GRIPPER_PROFILE_SEEN" == 0 ]] || { echo "duplicate gripper profile" >&2; exit 64; }
+      GRIPPER_PROFILE_SEEN=1
+      GRIPPER_PROFILE_EXPECT=1 ;;
+    --gripper-profile=*|--gripper-profiles|--gripper-profiles=*)
+      echo "use --gripper-profile legacy or new_20261015; catalog is package-owned" >&2; exit 64 ;;
+  esac
+done
+[[ "$GRIPPER_PROFILE_EXPECT" == 0 ]] || { echo "missing gripper profile" >&2; exit 64; }
+# Read-only wire check: a mixed/old native binary must never silently use 2000
+# after the operator selects the field preset. No ROS node is created here.
+GRIPPER_EXPECTED_WIRE="$(python3 "${SCRIPT_DIR}/tools/a3p_gripper_bridge.py" \
+  --grip-source "${SCRIPT_DIR}/tools/grip.py" --gripper-profile "$GRIPPER_PROFILE" --print-release-wire)"
+GRIPPER_NATIVE_WIRE="$("${SCRIPT_DIR}/a3_deploy_onnx_ref_pingpong" \
+  --inspect-serve-release-wire --gripper-profile "$GRIPPER_PROFILE" \
+  --gripper-profiles "${SCRIPT_DIR}/tools/gripper_profiles.json")"
+[[ "$GRIPPER_NATIVE_WIRE" == "$GRIPPER_EXPECTED_WIRE" ]] || { echo "gripper native/bridge profile mismatch" >&2; exit 65; }
+echo "[a3_pingpong] gripper_profile=$GRIPPER_PROFILE wire_match=1"
 SERVE_ENABLED=0
 SERVE_UNSUPPORTED_OVERRIDE=""
 SERVE_TIMELINE_OVERRIDE=0
@@ -1411,6 +1459,7 @@ if [[ "${SERVE_ENABLED}" == "0" ]]; then
   exec "${SCRIPT_DIR}/a3_deploy_onnx_ref_pingpong" \
     --runtime-cfg "${PINGPONG_RUNTIME_CFG}" \
     --aimrt-cfg "${A3_AIMRT_CFG}" \
+    --gripper-profiles "${SCRIPT_DIR}/tools/gripper_profiles.json" \
     "$@"
 fi
 
@@ -1510,6 +1559,7 @@ if [[ "${GRIPPER_AVAILABLE}" == "1" ]]; then
     --socket "${SERVE_SOCKET}" \
     --ready-file "${SERVE_READY}" \
     --grip-source "${SCRIPT_DIR}/tools/grip.py" \
+    --gripper-profile "${GRIPPER_PROFILE}" \
     --allow-publish \
     --confirm-real-gripper &
   GRIPPER_BRIDGE_PID=$!
@@ -1543,6 +1593,7 @@ echo "[a3_pingpong] transport=${A3_TRANSPORT} aimrt_cfg=${A3_AIMRT_CFG} runtime_
 "${SCRIPT_DIR}/a3_deploy_onnx_ref_pingpong" \
   --runtime-cfg "${PINGPONG_RUNTIME_CFG}" \
   --aimrt-cfg "${A3_AIMRT_CFG}" \
+  --gripper-profiles "${SCRIPT_DIR}/tools/gripper_profiles.json" \
   "$@" \
   "${SERVE_GRIPPER_ARGS[@]}" \
   "${SERVE_TIMELINE_ARGS[@]}" &
@@ -1560,9 +1611,9 @@ RUN_A3_PINGPONG
 
   chmod +x "${PKG_DIR}/run_a3.sh" "${PKG_DIR}/run_a3_probe.sh" "${PKG_DIR}/run_a3_pingpong.sh"
 
-  # Real-A3 RallyV10 operator entrypoints are Rockchip-only. Keep SHADOW and
-  # real motion as separate scripts so no wrapper can auto-promote control mode.
-  if [[ "${ARCH}" == "rockchip" ]]; then
+  # These legacy entrypoints pin model_10500_v10 and cannot launch a policy-dir
+  # package. Keep their mandatory checks only for that exact legacy model.
+  if is_legacy_rally_v10_package; then
     install -m 0644 \
       "${SCRIPT_DIR}/rally_v10_mdu_common.sh" \
       "${PKG_DIR}/rally_v10_mdu_common.sh"
@@ -1757,6 +1808,7 @@ verify_package() {
     "motions/a3p_op3_serve025_smooth_center_v14.csv"
     "tools/a3p_gripper_bridge.py"
     "tools/grip.py"
+    "tools/gripper_profiles.json"
   )
   local serve_rel
   for serve_rel in "${serve_required[@]}"; do
@@ -1765,7 +1817,7 @@ verify_package() {
       exit 1
     fi
   done
-  if [[ "${ARCH}" == "rockchip" ]]; then
+  if is_legacy_rally_v10_package; then
     if [[ ! -f "${PKG_DIR}/rally_v10_mdu_common.sh" ]]; then
       echo "missing RallyV10 MDU helper: ${PKG_DIR}/rally_v10_mdu_common.sh" >&2
       exit 1

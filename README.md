@@ -1,5 +1,14 @@
 # HOPE: Hitch Open Ping-Pong Embodied AI Challenge
 
+Mac users: see [macOS development and operator setup](docs/operations/macos_deployment.md).
+The operator backend supports any normal Mac login, with explicit Mac/Linux
+profiles and separate configurable container/robot accounts; no personal Mac
+username or local administrator account is hardcoded. Console 1.8.15 includes
+operator, gripper and NatNet/VRPN selectors. The final Mac build includes both
+mocap workspaces, uses the `hope` container group, and preserves schema-5 venue
+settings through the combined schema-6 backend. It does not deploy to the robot
+or change robot motions or scheduling.
+
 Runtime updates from October 11–13: [deployment and Gate 3](docs/operations/deploy_and_gate3.md),
 [shared ball physics](docs/operations/ball_physics_calibration.md),
 [Foxglove recording and live Motive localization](foxglove/extensions/hope-a3-console/README.md),

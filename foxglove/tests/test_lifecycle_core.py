@@ -11,7 +11,7 @@ import sys
 sys.path.insert(0, str(FOXGLOVE_DIR / "a3"))
 
 from hope_lifecycle_core import (  # noqa: E402
-    CONFIG_FIELDS,
+    CONFIG_FIELDS, LEGACY_CONFIG_FIELDS, OPERATOR_CONFIG_FIELDS,
     LifecycleConfig,
     apply_config_updates,
     config_from_document,
@@ -50,6 +50,10 @@ class LifecycleConfigTests(unittest.TestCase):
                 "mdu_internal_ip": "",
                 "motive_ip": "",
                 "table_side": "P1",
+                "operator_profile": "linux",
+                "gripper_profile": "legacy",
+                "pants_profile": "v2", "mocap_source": "none",
+                "vrpn_ip": "", "vrpn_port": "3883", "vrpn_units": "mm",
             },
         )
 
@@ -154,6 +158,24 @@ class LifecycleConfigTests(unittest.TestCase):
             with self.subTest(invalid=invalid), self.assertRaises(ValueError):
                 validate_table_side(invalid)
 
+    def test_gripper_selection_survives_old_clients_and_restart(self):
+        current = self.valid_config(revision=1)
+        selected = apply_config_updates(current, list({**current.values(),
+            "operator_profile": "mac", "gripper_profile": "new_20261015"}.items()))
+        self.assertEqual(config_from_document(config_to_document(selected)), selected)
+        for fields in (LEGACY_CONFIG_FIELDS, OPERATOR_CONFIG_FIELDS):
+            old = [(name, selected.values()[name]) for name in fields]
+            moved = apply_config_updates(selected, old)
+            self.assertEqual(moved.gripper_profile, "new_20261015")
+            self.assertEqual(moved.operator_profile, "mac")
+        legacy = config_to_document(current)
+        legacy["schema_version"] = 3
+        legacy.pop("gripper_profile")
+        self.assertEqual(config_from_document(legacy).gripper_profile, "legacy")
+        for value in ("unknown", "new_20261015 ", 1, None):
+            with self.assertRaisesRegex(ValueError, "gripper_profile"):
+                apply_config_updates(current, list({**current.values(), "gripper_profile": value}.items()))
+
     def test_document_round_trip_and_atomic_save(self):
         config = self.valid_config(revision=2)
         self.assertEqual(config_from_document(config_to_document(config)), config)
@@ -162,7 +184,7 @@ class LifecycleConfigTests(unittest.TestCase):
             save_config_atomic(path, config)
             self.assertEqual(load_config(path), config)
             self.assertEqual(path.stat().st_mode & 0o777, 0o600)
-            self.assertEqual(json.loads(path.read_text())["schema_version"], 2)
+            self.assertEqual(json.loads(path.read_text())["schema_version"], 6)
 
     def test_unconfirmed_or_malformed_documents_fail(self):
         document = config_to_document(self.valid_config(revision=1))
@@ -178,8 +200,40 @@ class LifecycleConfigTests(unittest.TestCase):
         document = config_to_document(self.valid_config(revision=1))
         document["schema_version"] = 1
         del document["table_side"]
+        document.pop("operator_profile")
         loaded = config_from_document(document)
         self.assertEqual(loaded.table_side, "P1")
+        self.assertEqual(loaded.operator_profile, "linux")
+
+    def test_schema_two_migrates_to_linux_and_preserves_table_side(self):
+        document = config_to_document(self.valid_config(revision=3))
+        document.update(schema_version=2, table_side="P2")
+        document.pop("operator_profile")
+        loaded = config_from_document(document)
+        self.assertEqual((loaded.operator_profile, loaded.table_side, loaded.revision),
+                         ("linux", "P2", 3))
+
+    def test_mac_profile_round_trip_and_legacy_update_preserves_selection(self):
+        current = self.valid_config(revision=4)
+        updated = apply_config_updates(current, list({**current.values(),
+            "operator_profile": "mac", "laptop_wifi_ip": "192.168.10.9"}.items()))
+        self.assertEqual(config_from_document(config_to_document(updated)), updated)
+        legacy = [(key, updated.values()[key]) for key in LEGACY_CONFIG_FIELDS]
+        legacy[0] = ("laptop_wifi_ip", "192.168.10.10")
+        changed = apply_config_updates(updated, legacy)
+        self.assertEqual(changed.operator_profile, "mac")
+        self.assertEqual(changed.laptop_wifi_ip, "192.168.10.10")
+        self.assertEqual(changed.revision, 6)
+
+    def test_operator_profile_is_canonical_and_required_in_schema_three(self):
+        current = self.valid_config(revision=1)
+        for invalid in ("", "MAC", "mac ", "other", None, 1):
+            with self.subTest(profile=invalid), self.assertRaises(ValueError):
+                apply_config_updates(current, list({**current.values(), "operator_profile": invalid}.items()))
+        document = config_to_document(current)
+        document.pop("operator_profile")
+        with self.assertRaisesRegex(ValueError, "operator_profile"):
+            config_from_document(document)
 
     def test_session_and_helper_event_contracts(self):
         self.assertEqual(

@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.8.15
+
+- Add field gripper presets, independent NatNet/VRPN selection and V2/V4 pants settings.
+- Keep source, endpoint, units and pelvis/world confirmations explicit in the Mac capture command.
+- Match the combined schema-6 backend, which preserves schema-5 venue configuration and Mac/Linux selection.
+- Rebuild the installer; no robot services or motion start when installing the panel.
+
+## 1.8.14
+
+- Add an explicit Linux/Mac operator-computer selector alongside the network configuration.
+- Subscribe to the supervisor's confirmed operator profile and submit it with the current Laptop IP.
+- Require a recognized profile before configuration confirmation and lock the selector during an active lifecycle.
+- Rebuild the distributed installer from the matching public source. Requires the matching profile-aware HDU supervisor.
+
 ## 1.8.13
 
 - Accept the current named Motive body without a pinned asset hash or fixed layout.
