@@ -544,9 +544,11 @@ decays over 0.25 seconds. This changes the command transition, not the standing
 target or policy, and is not proof of a safe physical stand on another robot.
 
 Planner's `target_turn_max_pose_age_s: 0.2` receive-age and source-age checks
-remain enabled. The earlier experiment removing them was reverted; it is not
-part of this runtime change. Historical deployment evidence and its limitations
-are preserved in [the 2026-10-18 runtime field notes](runtime_field_notes_20261018.md).
+remain enabled by default. Sites can explicitly set
+`target_turn_reject_stale_pose: false` to record and warn on pose age without
+vetoing a shot; invalid-pose, strike-deadline and turn-angle checks remain.
+See the [Planner site-option documentation](../../hope_ws/src/hope_planner_cpp/README.md).
+Historical deployment evidence and its limitations are preserved in [the 2026-10-18 runtime field notes](runtime_field_notes_20261018.md).
 
 ## ELink transport scheduling
 
@@ -718,10 +720,25 @@ schema 5, preserving gripper, pants, mocap source, VRPN endpoint/units, table si
 and network settings. Older clients retain settings they cannot edit. Install
 the matching HDU core/supervisor/helper and Console only during a separately
 approved stopped deployment. The Mac local build does not install them remotely.
-This port leaves Prepare motion, serving CSVs and release lead timing unchanged.
+Gripper and mocap selection do not change the selected serving CSV.
 
 Mocap capture is independently selected and started on the operator computer.
 See [Motive / ChingMu setup](foxglove_mocap_setup.md),
 [VRPN pants assets](vrpn_pants_profiles.md), and the
 [final Mac build](macos_deployment.md). ChingMu feeds the Mac VRPN receiver;
 the Mac publishes ROS2 to the HDU. No MDU mocap-server connection is required.
+
+## Prepare motion and release timing
+
+Prepare retains its five-second duration and READY target. The left arm clears
+first; the right shoulder pitch/roll and elbow begin at 2.0 s, then shoulder yaw
+and wrists at 2.6 s. CSV playback is unchanged. The operator reported no further
+Prepare leg contact after this field change; the regression test checks the
+command ordering, not physical collision safety.
+
+The two packaged ping-pong runtime configurations use release lead 3 (frame
+48 event -> frame 45 command at 100 Hz). The controller accepts 0–4 frames only
+while idle; frame 44 was a trial, not the retained default. These parameters do
+not identify the physical command-to-detachment delay. The v20 CSV asset was
+added separately in #53; these runtime changes do not select a new serve CSV.
+Retain the previous asset for rollback when changing an installed selection.
